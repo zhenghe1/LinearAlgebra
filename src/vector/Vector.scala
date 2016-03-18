@@ -1,9 +1,18 @@
 package vector
 
+import java.text.DecimalFormat
+
 /**
   * Created by zhenghe on 3/17/2016.
   */
 class Vector(val coordinates: scala.collection.immutable.Vector[Double], val dimensions: Int) {
+
+    /*****************************************************
+      * PRIVATE MEMBER FIELDS/METHODS
+      ****************************************************/
+
+    private val threeDecForm = new DecimalFormat("#.###")
+    private val round3D = threeDecForm.format(_: Double).toDouble
 
     /*****************************************************
       * AUXILIARY CONSTRUCTORS
@@ -21,7 +30,7 @@ class Vector(val coordinates: scala.collection.immutable.Vector[Double], val dim
       * Finds the magnitude of the Vector => sqrt of the sum of all squared values
       * @return Double magnitude
       */
-    def magnitude(): Double = scala.math.sqrt(this.coordinates.map(scala.math.pow(_, 2)).sum)
+    def magnitude(): Double = round3D(scala.math.sqrt(this.coordinates.map(scala.math.pow(_, 2)).sum))
 
     /**
       * Normalizes Vector to unit vector, with sum = 1
@@ -36,17 +45,11 @@ class Vector(val coordinates: scala.collection.immutable.Vector[Double], val dim
       * OPERATORS
       ****************************************************/
 
-    def +(that: Vector): Vector = new Vector((this.coordinates, that.coordinates).zipped.map(_ + _))
+    def +(that: Vector): Vector = new Vector((this.coordinates, that.coordinates).zipped.map((a, b) => round3D(a + b)))
 
-    def -(that: Vector): Vector = new Vector((this.coordinates, that.coordinates).zipped.map(_ - _))
+    def -(that: Vector): Vector = new Vector((this.coordinates, that.coordinates).zipped.map((a, b) => round3D(a - b)))
 
-    def *(scalar: Double): Vector = new Vector(this.coordinates.map(_ * scalar))
-
-    def ~=(that: Vector): Boolean = {
-        if(!(this == that)) {
-            (this.coordinates, that.coordinates).zipped.exists((a,b) => !((a - b) > 0.001))
-        } else true
-    }
+    def *(scalar: Double): Vector = new Vector(this.coordinates.map(a => round3D(a * scalar)))
 
     /*****************************************************
       * OVERRIDES
